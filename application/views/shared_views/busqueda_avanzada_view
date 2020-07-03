@@ -1,0 +1,130 @@
+<link rel="stylesheet" type="text/css" href="<?php echo base_url();?>asset/datepicker/css/datepicker.css">
+    <section id="main-content">
+        <section class="wrapper site-min-height">
+        <!-- page start-->
+            <div class="row">
+                <div class="col-lg-12">
+                    <section class="panel">
+                        <header   class="panel-heading">
+                            Crear cuenta en FROAC
+                        </header>
+
+                        <!--FORMULARIO DE REGISTRO DE USUARIO-->
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <form method="POST" role="form" action="<?php echo base_url();?>index.php/usuario/guardar" enctype='multipart/form-data' id="form">
+                                    <div class="col-lg-12">
+                                        <!--label>hola:</label><input type="text" id="verResult"/-->
+                                        <section class="panel">
+                                            <header class="panel-heading">
+                                                Información personal
+                                            </header>
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <input type="hidden" value="2" name="tipoU">
+                                                    <!--<label for="exampleInputEmail1">Usted es:</label>
+                                                    <select class="form-control input-sm m-bot15" name="tipoU" required>
+                                                    <option value="2">Estudiante</option>-->
+                                                    <!-- Se elimina la opción de registrarse con el rol de "profesor" ya que
+                                                    para este no se deben tener en cuenta las preferencias. A este lo agrega el admin-->
+                                                    <!--<option value="3">Profesor</option>
+                                                    </select>-->
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="nombre">Nombre:</label>
+                                                    <input  type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombres" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="apellido">Apellido:</label>
+                                                    <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Apellidos" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="fecha_nac">Fecha de nacimiento:</label>
+                                                    <!--<input data-date-viewmode="years" data-date-format="dd-mm-yyyy" type="text" class="form-control" id="fecha_nac" name="fecha_nac" placeholder="Selecciona año, mes y día" required>-->
+                                                    <input  type="text" class="form-control" id="fecha_nac" name="fecha_nac" placeholder="Selecciona año, mes y día" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="mail">E-mail:</label>
+                                                    <!-- Se valida la existencia de @ y . en el correo ingresado por medio del atributo pattern -->
+                                                    <input type="text" class="form-control" id="mail" name="mail" placeholder="Correo electronico" pattern="[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{1,5}" required>
+                                                </div>
+                                                <div id="in_use1" class="alert alert-block alert-danger fade in">
+                                                    <button data-dismiss="alert" class="close close-sm" type="button">
+                                                        <i class="icon-remove"></i>
+                                                    </button>
+                                                    <strong>Lo sentimos!</strong> El correo electrónico ingresado, ya está registrado.
+                                                </div>
+                                                <div id="no_use1" class="alert alert-success fade in">
+                                                    <button data-dismiss="alert" class="close close-sm" type="button">
+                                                        <i class="icon-remove"></i>
+                                                    </button>
+                                                    <strong>Éxito!</strong> este correo electronico esta disponible.
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="username">Nombre de usuario:</label>
+                                                    <input type="text" class="form-control" id="username" name="username" placeholder="Nombre de usuario unico en FROAC" required>
+                                                </div>
+                                                <div id="in_use" class="alert alert-block alert-danger fade in">
+                                                    <button data-dismiss="alert" class="close close-sm" type="button">
+                                                        <i class="icon-remove"></i>
+                                                    </button>
+                                                    <strong>Lo sentimos!</strong> el nombre de usuario <strong id="in_name"></strong> no esta disponible.
+                                                </div>
+                                                <div id="no_use" class="alert alert-success fade in">
+                                                    <button data-dismiss="alert" class="close close-sm" type="button">
+                                                        <i class="icon-remove"></i>
+                                                    </button>
+                                                    <strong>Éxito!</strong> este nombre de usuario esta disponible.
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="passwd">Password:</label>
+                                                    <input type="password" class="form-control" id="passwd" name="passwd" placeholder="Contraseña" required><br>
+                                                    <input type="password" class="form-control" id="passwd2" name="passwd2" placeholder="Reescribe la contraseña" required>
+                                                </div>
+                                                <div id="no_match" class="alert alert-block alert-danger fade in">
+                                                    <button data-dismiss="alert" class="close close-sm" type="button">
+                                                        <i class="icon-remove"></i>
+                                                    </button>
+                                                    <strong>Las contraseñas no concuerdan.</strong>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="level">Nivel Educativo:</label>
+                                                    <select class="form-control input-sm m-bot15" name="nevel_ed" required>
+                                                        <?php
+                                                        foreach ($nivel_educativo as $key) { ?>
+                                                            <option name="level[]" value= "<?php echo $key->use_id_level ?>"><?php echo $key->use_level ?></option>
+                                                        <?php } ?>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="pref">Preferencias:</label>
+                                                    <select class="form-control input-sm m-bot15" name="pref" required>
+                                                        <?php
+                                                        foreach ($preferencias as $key) { ?>
+                                                            <input type="checkbox" name="pref[]" value= " <?php echo $key->use_pre_id ?> "/><?php echo $key->use_pre_preferencia ?><br />
+                                                        <?php } ?>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <strong>¿Presenta algún tipo de necesidad especial?</strong>
+                                                <div class="row col-md-12">
+                                                    <INPUT TYPE=RADIO id="discapasi" NAME="NO" value="Si"> Si
+                                                    <INPUT TYPE=RADIO id="discapano" NAME="NO" value="No"> No
+                                                </div>
+                                            </div>
+
+                                            <input type="button" style="display:none;" value="Realizar Test NEED" name="need" id="need" class="btn btn-info">
+                                    </div>
+                                    <!--FIN FORMULARIO DE REGISTRO DE USUARIO-->
+                                    
+
+                                    </header>
+                                    </div>
+            </div>
+        </section>
+        </div>
+
+        </div>
+      <!-- page end-->
+    </section>
+    </section>

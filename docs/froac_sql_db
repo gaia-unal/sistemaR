@@ -1,0 +1,374 @@
+﻿-- Table: use_rol
+-- DROP TABLE use_rol;
+-- Tabla donde se registran los roles asociados a los usuarios
+
+CREATE TABLE use_rol
+(
+ use_rol_id smallint NOT NULL,
+ use_rol_nombre text,
+ CONSTRAINT pk_use_rol_id PRIMARY KEY (use_rol_id)
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE use_rol
+ OWNER TO postgres;
+
+
+-- Table: users
+-- DROP TABLE users;
+-- Tabla donde se registran los usuarios
+
+CREATE TABLE users
+(
+ use_username character varying(20) NOT NULL,
+ use_nombre character varying(100),
+ use_apellido character varying(100),
+ use_clave character varying(100),
+ use_email character varying(100),
+ use_fecha_registro date,
+ use_estado boolean,
+ use_rol_id smallint,
+ CONSTRAINT pk_users PRIMARY KEY (use_username),
+ CONSTRAINT fk_user_rol FOREIGN KEY (use_rol_id)
+     REFERENCES use_rol (use_rol_id) MATCH SIMPLE
+     ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE users
+ OWNER TO postgres;
+
+
+-- Table: repository
+-- DROP TABLE repository;
+-- En esta tabla se registra cada repositorio que se federa
+
+CREATE TABLE repository
+(
+ rep_id serial NOT NULL,
+ rep_host text NOT NULL,
+ rep_port character varying(10),
+ rep_databasename character varying(100),
+ rep_loggin character varying(100),
+ rep_password character varying(200),
+ rep_affiliation character varying(100),
+ rep_registrationdate date,
+ rep_url character varying(100),
+ rep_typerepository character varying(15),
+ rep_email character varying(30),
+ rep_name character varying(30),
+ rep_metadata_inf character varying(10),
+ rep_frequency integer,
+ rep_lastupdate date,
+ rep_countoas integer,
+ use_username character varying(20),
+ CONSTRAINT pk_repository PRIMARY KEY (rep_id),
+ CONSTRAINT fk_usuario FOREIGN KEY (use_username)
+     REFERENCES users (use_username) MATCH SIMPLE
+     ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+ OIDS=TRUE
+);
+ALTER TABLE repository
+ OWNER TO postgres;
+
+
+-- Table: lo
+-- DROP TABLE lo;
+-- Tabla principal donde se guardan los principales metadatos asociados a cada objeto e informaci?n asociada al proceso de cosechado
+
+CREATE TABLE lo
+(
+ lo_id character varying(50) NOT NULL,
+ rep_id integer NOT NULL,
+ lo_title character varying,
+ lo_language character varying,
+ lo_description character varying,
+ lo_keyword character varying,
+ lo_structure character varying,
+ lo_aggregationlevel character varying,
+ lo_author character varying,
+ lo_date character varying,
+ lo_format character varying,
+ lo_location character varying,
+ lo_interactivitytype character varying,
+ lo_learningresourcetype character varying,
+ lo_interactivitylevel character varying,
+ lo_difficulty character varying,
+ lo_insertiondate date NOT NULL,
+ lo_deleted boolean NOT NULL DEFAULT false,
+ lo_lastmodified timestamp with time zone,
+ lo_xml_lom character varying,
+ lo_xml_cem character varying,
+ lo_xml_obaa character varying,
+ lo_xml_dc character varying,
+ lo_idfeb serial NOT NULL,
+ CONSTRAINT lo_pkey PRIMARY KEY (lo_id, rep_id)
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE lo
+ OWNER TO postgres;
+
+
+-- Table: evaluation
+-- DROP TABLE evaluation;
+
+CREATE TABLE evaluation
+(
+ lo_id character varying(1000),
+ rep_id integer,
+ eva_completeness character varying(50),
+ eva_consistency character varying(50),
+ eva_coherence character varying(50),
+ eva_availability character varying(50),
+ eva_dateevaluation date,
+ CONSTRAINT evaluation_lo_pkey PRIMARY KEY (lo_id, rep_id),
+ CONSTRAINT evaluation_lom_fkey FOREIGN KEY (lo_id, rep_id)
+     REFERENCES lo (lo_id, rep_id) MATCH SIMPLE
+     ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE evaluation
+ OWNER TO postgres;  
+ 
+ 
+-- Table: eva_expert
+-- DROP TABLE eva_expert;
+-- En esta tabla se almacenan las respuestas a la encuesta de evaluaci?n de los usuarios con rol "experto"
+
+CREATE TABLE eva_expert
+(
+ eva_exp_id serial NOT NULL,
+ lo_id character varying(1000),
+ rep_id integer,  
+ eva_exp_e11 numeric,
+ eva_exp_e12 numeric,
+ eva_exp_e21 numeric,
+ eva_exp_e22 numeric,
+ eva_exp_e31 numeric,
+ eva_exp_e32 numeric,
+ eva_exp_e41 numeric,
+ eva_exp_e42 numeric,
+ eva_exp_e51 numeric,
+ eva_exp_e52 numeric,
+ eva_exp_e61 numeric,
+ eva_exp_e62 numeric,
+ eva_exp_e71 numeric,
+ eva_exp_e81 numeric,
+ eva_exp_ne1 numeric,
+ eva_exp_ne2 numeric,
+ eva_exp_ne3 numeric,
+ eva_exp_ne4 numeric,
+ eva_exp_ne5 numeric,
+ use_username character varying(20),
+ CONSTRAINT pk_eva_exp_id PRIMARY KEY (eva_exp_id),
+ CONSTRAINT evaluation_expert_username_fk FOREIGN KEY (use_username)
+     REFERENCES users (use_username) MATCH SIMPLE
+     ON UPDATE NO ACTION ON DELETE NO ACTION,
+ CONSTRAINT expert_evaluation_lom_fk FOREIGN KEY (lo_id, rep_id)
+     REFERENCES lo (lo_id, rep_id) MATCH SIMPLE
+     ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE eva_expert
+ OWNER TO postgres;
+ 
+
+-- Table: eva_user
+-- DROP TABLE eva_user;
+-- En esta tabla se almacenan las respuestas a la encuesta de evaluaci?n de los usuarios con rol "estudiante"
+
+CREATE TABLE eva_user
+(
+ eva_use_id serial NOT NULL,
+ lo_id character varying(1000),
+ rep_id integer,
+ eva_use_u11 numeric,
+ eva_use_u21 numeric,
+ eva_use_u31 numeric,
+ eva_use_u41 numeric,
+ eva_use_u51 numeric,
+ eva_use_u61 numeric,
+ eva_use_u71 numeric,
+ CONSTRAINT pk_eva_use_id PRIMARY KEY (eva_use_id),
+ CONSTRAINT user_evaluation_lom_fk FOREIGN KEY (lo_id, rep_id)
+     REFERENCES lo (lo_id, rep_id) MATCH SIMPLE
+     ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE eva_user
+ OWNER TO postgres; 
+
+
+-- Table: use_ls
+-- DROP TABLE use_ls;
+-- Tabla donde se almacenan los Estilos de Aprendizaje de los usuarios estudiantes
+
+CREATE TABLE use_ls
+(
+ use_ls_id smallint NOT NULL,
+ use_ls_learningStyle text,
+ use_ls_description text,
+ CONSTRAINT pk_estilos_aprendizaje PRIMARY KEY (use_ls_id)
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE use_ls
+ OWNER TO postgres;
+
+ 
+-- Table: use_student
+-- DROP TABLE use_student;
+-- Tabla con los datos particulares de un estudiante
+
+CREATE TABLE use_student
+(
+ use_username character varying(20) NOT NULL,
+ use_stu_datebirth date,
+ use_stu_place text,
+ use_stu_gender "char",
+ use_ls_id smallint,
+ use_stu_level text,
+ CONSTRAINT pk_idestudiante PRIMARY KEY (use_username),
+ CONSTRAINT fk_usuario FOREIGN KEY (use_username)
+     REFERENCES users (use_username) MATCH SIMPLE
+     ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE use_student
+ OWNER TO postgres;
+
+ 
+-- Table: use_score
+-- DROP TABLE use_score;
+
+CREATE TABLE use_score
+(
+ lo_id character varying(1000),
+ rep_id integer,
+ use_sco_score integer,
+ use_sco_date date,
+ use_username character varying(20) NOT NULL,
+ CONSTRAINT pk_use_score PRIMARY KEY (lo_id, use_username),
+ CONSTRAINT fk_use_score FOREIGN KEY (lo_id, rep_id)
+     REFERENCES lo (lo_id, rep_id) MATCH SIMPLE
+     ON UPDATE CASCADE ON DELETE CASCADE,
+ CONSTRAINT fk_estudiante FOREIGN KEY (use_username)
+     REFERENCES use_student (use_username) MATCH SIMPLE
+     ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE use_score
+ OWNER TO postgres;
+ 
+ 
+-- Table: use_preference
+-- DROP TABLE use_preference;
+
+CREATE TABLE use_preference
+(
+ use_pre_id integer NOT NULL,
+ use_pre_preferencia text,
+ CONSTRAINT pk_preference PRIMARY KEY (use_pre_id)
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE use_preference
+ OWNER TO postgres;  
+ 
+
+-- Table: usr_pre_stu
+-- DROP TABLE usr_pre_stu;
+
+CREATE TABLE use_pre_stu
+(
+ use_pre_id integer NOT NULL,
+ use_username character varying(20) NOT NULL,
+ CONSTRAINT pk_preferencia PRIMARY KEY (use_pre_id, use_username),
+ CONSTRAINT fk_estudiante FOREIGN KEY (use_username)
+     REFERENCES use_student (use_username) MATCH SIMPLE
+     ON UPDATE CASCADE ON DELETE CASCADE,
+ CONSTRAINT fk_preferencia FOREIGN KEY (use_pre_id)
+     REFERENCES use_preference (use_pre_id) MATCH SIMPLE
+     ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE use_pre_stu
+ OWNER TO postgres;
+ 
+
+-- Table: lo_history
+-- DROP TABLE lo_history;
+
+CREATE TABLE lo_history
+(
+ lo_his_id serial NOT NULL,
+ rep_id integer,
+ lo_id character varying(300),
+ lo_his_title character varying(300),
+ lo_his_count integer,
+ lo_his_downloaded_datetime character varying(30),
+ CONSTRAINT id_lo_history_pk PRIMARY KEY (lo_his_id)
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE lo_history
+ OWNER TO postgres;  
+ 
+ 
+-- Table: rep_history
+-- DROP TABLE rep_history;
+
+CREATE TABLE rep_history
+(
+ rep_his_id serial NOT NULL,
+ rep_id integer NOT NULL,
+ rep_his_countoas integer,
+ rep_his_date date,
+ rep_his_name character varying(255),
+ rep_his_repouser character varying(20),
+ CONSTRAINT repository_history_pkey PRIMARY KEY (rep_his_id)
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE rep_history
+ OWNER TO postgres;
+
+ 
+-- Table: rss
+-- DROP TABLE rss;
+
+CREATE TABLE rss
+(
+ rss_id serial NOT NULL,
+ rep_id integer,
+ rss_noticedate date,
+ rss_notice_title character varying(255),
+ CONSTRAINT pk_idrss PRIMARY KEY (rss_id)
+)
+WITH (
+ OIDS=FALSE
+);
+ALTER TABLE rss
+ OWNER TO postgres;
